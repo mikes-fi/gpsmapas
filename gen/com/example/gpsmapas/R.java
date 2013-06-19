@@ -187,6 +187,7 @@ containing a value of this type.
         public static final int hybrid=0x7f050004;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
+        public static final int rutas_frecuentes=0x7f050007;
         public static final int satellite=0x7f050002;
         public static final int terrain=0x7f050003;
     }
@@ -275,6 +276,7 @@ containing a value of this type.
         public static final int location_client_ulr_inactive_age_under_13=0x7f060012;
         public static final int location_client_ulr_inactive_age_unknown=0x7f060013;
         public static final int location_client_ulr_inactive_unknown_restriction=0x7f060014;
+        public static final int rutas_frecuentes=0x7f060018;
     }
     public static final class style {
         /** 

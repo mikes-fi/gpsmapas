@@ -1,17 +1,22 @@
 package com.example.gpsmapas;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -20,16 +25,18 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MainActivity extends FragmentActivity{
 
-	GoogleMap mapa;
-	boolean tomarRuta = false;
-	ArrayList<LatLng> rutaTomada = new ArrayList<LatLng>();
-	
+	private GoogleMap mapa;
+	private boolean tomarRuta = false;
+	private ArrayList<LatLng> rutaTomada = new ArrayList<LatLng>();
+	private DatabaseHandler db;
+	private Context context= this;
 	
 	public void agregarMarca(LatLng ll) {
 		if(true){
 			//mapa.addMarker(new MarkerOptions().position(ll));
 			rutaTomada.add(ll);
 			dibujaRuta();
+			
 		}
 	}
 	
@@ -44,6 +51,15 @@ public class MainActivity extends FragmentActivity{
 		}
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		db = new DatabaseHandler(this);
+		Route r = new Route(rutaTomada, 5L, 10L);
+		db.addRoute(r);
+		db.close();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,12 +78,25 @@ public class MainActivity extends FragmentActivity{
 //    	CameraUpdate up = CameraUpdateFactory.newCameraPosition(pos);
 //    	mapa.animateCamera(up);
 //    
+		
 		mapa.setOnMapClickListener(new OnMapClickListener() {
-			
 			@Override
 			public void onMapClick(LatLng arg0) {
-				tomarRuta = !tomarRuta;
-				
+				tomarRuta = !tomarRuta;				
+			}
+		});
+		mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
+			
+			@Override
+			public void onMapLongClick(LatLng arg0) {
+				db = new DatabaseHandler(context);
+				Route r = new Route(rutaTomada, 5L, 10L);
+				db.addRoute(r);
+				db.close();
+				rutaTomada = new ArrayList<LatLng>();
+				Toast t = Toast.makeText(context, "Guardando ruta", Toast.LENGTH_LONG);
+				Log.v("LOL", "guardando ruta");
+				t.show();
 			}
 		});
 		mapa.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
@@ -87,14 +116,23 @@ public class MainActivity extends FragmentActivity{
 						.build();
 			    	CameraUpdate up = CameraUpdateFactory.newCameraPosition(pos);
 			    	mapa.animateCamera(up);
-			    	
+			    	String sp = location.getTime() + "\n" + location.getBearing() + "\n" + location.getSpeed();
+			    	Toast toast = Toast.makeText(getApplicationContext(),sp , Toast.LENGTH_SHORT);
+			    	toast.show();
 		    	}
-		    	//mapa.animateCamera(CameraUpdateFactory.newLatLng(ll));
 		    	
 			}
 		});
 		//locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0.0f, locListener);
-		
+		db = new DatabaseHandler(this);
+		List<Route> rutas = db.getAllRoutes();
+		db.close();
+		if (rutas.size() > 0){
+			for (Route r : rutas){
+				PolylineOptions po = r.getPolylineOptions();
+				mapa.addPolyline(po);
+			}
+		}
 		
 	}
 
