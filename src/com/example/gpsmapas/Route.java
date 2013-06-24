@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -30,7 +31,7 @@ public class Route {
 			this.segments.add(new Segment(l1,l2,punt));
 		}
 		this.posInit = this.segments.get(0).getPosInit();
-		this.posFin = this.segments.get(size-1).getPosFin();
+		this.posFin = this.segments.get(size-2).getPosFin();
 	}
 	
 	public PolylineOptions getPolylineOptions(){
@@ -40,6 +41,7 @@ public class Route {
 		po.add(this.segments.get(0).getLatLngInit());
 		for(Segment s: this.segments){
 			po.add(s.getLatLngFin());
+			Log.v("ROFL", "segmento");
 		}
 		
 		return po;

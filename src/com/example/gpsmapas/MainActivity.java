@@ -28,6 +28,7 @@ public class MainActivity extends FragmentActivity{
 	private GoogleMap mapa;
 	private boolean tomarRuta = false;
 	private ArrayList<LatLng> rutaTomada = new ArrayList<LatLng>();
+	private ArrayList<LatLng> rutaTomada2 = new ArrayList<LatLng>();
 	private DatabaseHandler db;
 	private Context context= this;
 	
@@ -82,7 +83,15 @@ public class MainActivity extends FragmentActivity{
 		mapa.setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public void onMapClick(LatLng arg0) {
-				tomarRuta = !tomarRuta;				
+				rutaTomada2.add(arg0);
+				int s = rutaTomada2.size();
+				
+				if ( s > 1 ){
+					PolylineOptions options = new PolylineOptions().width(10).color(Color.DKGRAY);
+					options.add(rutaTomada2.get(s-2));
+					options.add(rutaTomada2.get(s-1));
+					mapa.addPolyline(options);
+				}
 			}
 		});
 		mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
@@ -90,19 +99,24 @@ public class MainActivity extends FragmentActivity{
 			@Override
 			public void onMapLongClick(LatLng arg0) {
 				db = new DatabaseHandler(context);
-				Route r = new Route(rutaTomada, 5L, 10L);
+				Route r = new Route(rutaTomada2, 5L, 10L);
 				db.addRoute(r);
 				db.close();
-				rutaTomada = new ArrayList<LatLng>();
+				rutaTomada2 = new ArrayList<LatLng>();
 				Toast t = Toast.makeText(context, "Guardando ruta", Toast.LENGTH_LONG);
 				Log.v("LOL", "guardando ruta");
 				t.show();
+				mapa.clear();
+				
 			}
 		});
+		
+		
 		mapa.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
 			
 			@Override
 			public void onMyLocationChange(Location location) {
+				Log.v("LOL", "location changed");
 		    	double lat = location.getLatitude();
 		    	double lon = location.getLongitude();
 		    	
@@ -127,8 +141,10 @@ public class MainActivity extends FragmentActivity{
 		db = new DatabaseHandler(this);
 		List<Route> rutas = db.getAllRoutes();
 		db.close();
+		Log.v("LOL","rutas " + rutas.size());
 		if (rutas.size() > 0){
 			for (Route r : rutas){
+				Log.v("LOL","poniendo ruta x" + r.getPosInit());
 				PolylineOptions po = r.getPolylineOptions();
 				mapa.addPolyline(po);
 			}

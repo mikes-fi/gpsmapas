@@ -44,13 +44,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Creating Tables
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		
 		String createSegmentos = "CREATE TABLE " + TABLE_SEGMENTS + "(" 
 				+ SEGMENTOS_ID + " INTEGER PRIMARY KEY," + SEGMENTOS_POS_INIT + " TEXT," + SEGMENTOS_POS_FIN + " TEXT,"
-				+ SEGMENTOS_RUTA + " INTEGER NOT NULL," + RUTAS_PUNT + " INTETGER )";
+				+ SEGMENTOS_RUTA + " INTEGER NOT NULL," + SEGMENTOS_PUNT + " INTEGER NOT NULL," + RUTAS_PUNT + " INTETGER )";
 
 		String createRutas = "CREATE TABLE " + TABLE_ROUTES + "(" 
 				+ RUTAS_ID + " INTEGER PRIMARY KEY," + RUTAS_POS_INIT + " TEXT," + RUTAS_POS_FIN + " TEXT,"
 				+ RUTAS_DISTANCIA + " REAL," + RUTAS_TIEMPO + " INTEGER," + RUTAS_PUNT + " INTETGER )";
+		Log.v(TAG,"creating");
 		db.execSQL(createSegmentos);
 		db.execSQL(createRutas);
 	}
@@ -59,8 +61,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older table if existed
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SEGMENTS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
 
 		// Create tables again
 		onCreate(db);
@@ -119,7 +121,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						s.setPosFin(c.getString(1));
 						r.getSegments().add(s);
 					} while (c.moveToNext());
-				}		
+				}
+				rutas.add(r);
+				Log.v(TAG,"ruta mas");
 			} while (cursor.moveToNext());
 		}
 
