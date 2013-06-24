@@ -6,6 +6,8 @@
         <item>Puntuacion</item>
         <item>Unidades Metricas</item>
         <item>Idioma</item>
+        <item>Grabar ruta</item>
+        <item>Guardar ruta</item>
         <item>Sugerencias</item>
     </string-array>
 </resources>

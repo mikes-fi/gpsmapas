@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -44,6 +43,7 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 	String[] names;
 	Resources res;
 	TabHost tabs;
+	boolean grabar = false;
 	private GoogleMap mapa;
 
 	private ArrayList<LatLng> rutaTomada2 = new ArrayList<LatLng>();
@@ -133,7 +133,7 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 		 * PolylineOptions().width(10) .color(Color.DKGRAY);
 		 * options.add(rutaTomada2.get(s - 2)); options.add(rutaTomada2.get(s -
 		 * 1)); mapa.addPolyline(options); } } });
-		 */
+		 
 		mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
 
 			@Override
@@ -150,7 +150,7 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 				mapa.clear();
 
 			}
-		});
+		});*/
 
 		mapa.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
 
@@ -159,23 +159,24 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 				Log.v("LOL", "location changed");
 				double lat = location.getLatitude();
 				double lon = location.getLongitude();
-
-				LatLng ll = new LatLng(lat, lon);
-				rutaTomada.add(ll);
-				dibujaRuta();
-				if (location.getSpeed() > 1) {
-					CameraPosition pos = new CameraPosition.Builder()
-							.target(ll).bearing(location.getBearing()).zoom(16)
-							.build();
-					CameraUpdate up = CameraUpdateFactory
-							.newCameraPosition(pos);
-					mapa.animateCamera(up);
-					String sp = location.getTime() + "\n"
-							+ location.getBearing() + "\n"
-							+ location.getSpeed();
-					Toast toast = Toast.makeText(getApplicationContext(), sp,
-							Toast.LENGTH_SHORT);
-					toast.show();
+				if (grabar) {
+					LatLng ll = new LatLng(lat, lon);
+					rutaTomada.add(ll);
+					dibujaRuta();
+					if (location.getSpeed() > 1) {
+						CameraPosition pos = new CameraPosition.Builder()
+								.target(ll).bearing(location.getBearing())
+								.zoom(16).build();
+						CameraUpdate up = CameraUpdateFactory
+								.newCameraPosition(pos);
+						mapa.animateCamera(up);
+						String sp = location.getTime() + "\n"
+								+ location.getBearing() + "\n"
+								+ location.getSpeed();
+						Toast toast = Toast.makeText(getApplicationContext(),
+								sp, Toast.LENGTH_SHORT);
+						toast.show();
+					}
 				}
 
 			}
@@ -249,6 +250,21 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 			alert = builder.create();
 			alert.show();
 			break;
+		case 5:
+			grabar = true;
+			break;
+		case 6:
+			grabar = false;
+			db = new DatabaseHandler(context);
+			Route r = new Route(rutaTomada2, 5L, 10L);
+			db.addRoute(r);
+			db.close();
+			rutaTomada2 = new ArrayList<LatLng>();
+			Toast t = Toast.makeText(context, "Guardando ruta", Toast.LENGTH_LONG);
+			Log.v("LOL", "guardando ruta");
+			t.show();
+			mapa.clear();
+			break;
 		case 2:
 			builder = new AlertDialog.Builder(this);
 			builder.setTitle("Puntuacion de la ruta");
@@ -279,9 +295,9 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 			db.close();
 			Log.v("LOL", "rutas " + rutas.size());
 			if (rutas.size() > 0) {
-				for (Route r : rutas) {
-					Log.v("LOL", "poniendo ruta x" + r.getPosInit());
-					PolylineOptions po = r.getPolylineOptions();
+				for (Route ru : rutas) {
+					Log.v("LOL", "poniendo ruta x" + ru.getPosInit());
+					PolylineOptions po = ru.getPolylineOptions();
 					mapa.addPolyline(po);
 				}
 			}
@@ -294,7 +310,7 @@ public class MainActivity extends android.support.v4.app.FragmentActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		// getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
