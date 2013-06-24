@@ -43,7 +43,7 @@ public class Route {
 		if (this.puntuacion < 2){
 			po.color(Color.RED);
 		} else if (this.puntuacion < 4) {
-			po.color(Color.YELLOW);
+			po.color(Color.rgb(139, 69, 19));
 		} else {
 			po.color(Color.GREEN);
 		}

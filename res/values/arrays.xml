@@ -3,6 +3,7 @@
     <string-array name="nav_options">
         <item>Buscar Rutas</item>
         <item>Borrar</item>
+        <item>Puntuacion</item>
         <item>Unidades Metricas</item>
         <item>Idioma</item>
         <item>Sugerencias</item>
