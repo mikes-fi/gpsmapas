@@ -37,7 +37,18 @@ public class Route {
 	public PolylineOptions getPolylineOptions(){
 		PolylineOptions po = new PolylineOptions();
 		po.width(10);
-		po.color(Color.BLUE);
+		if (this.puntuacion == null){
+			return po;
+		}
+		if (this.puntuacion < 2){
+			po.color(Color.RED);
+		} else if (this.puntuacion < 4) {
+			po.color(Color.YELLOW);
+		} else {
+			po.color(Color.GREEN);
+		}
+		
+			
 		po.add(this.segments.get(0).getLatLngInit());
 		for(Segment s: this.segments){
 			po.add(s.getLatLngFin());

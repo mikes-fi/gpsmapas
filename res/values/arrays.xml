@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="nav_options">
+        <item>Buscar Rutas</item>
+        <item>Borrar</item>
+        <item>Unidades Metricas</item>
+        <item>Idioma</item>
+        <item>Sugerencias</item>
+    </string-array>
+</resources>

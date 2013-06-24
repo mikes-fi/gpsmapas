@@ -44,7 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Creating Tables
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		
+
 		String createSegmentos = "CREATE TABLE " + TABLE_SEGMENTS + "(" 
 				+ SEGMENTOS_ID + " INTEGER PRIMARY KEY," + SEGMENTOS_POS_INIT + " TEXT," + SEGMENTOS_POS_FIN + " TEXT,"
 				+ SEGMENTOS_RUTA + " INTEGER NOT NULL," + SEGMENTOS_PUNT + " INTEGER NOT NULL," + RUTAS_PUNT + " INTETGER )";
@@ -101,7 +101,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	public List<Route> getAllRoutes(){
 		List<Route> rutas = new ArrayList<Route>();
-		String selectQuery = "SELECT "+ RUTAS_ID +" FROM " + TABLE_ROUTES;
+		String selectQuery = "SELECT "+ RUTAS_ID + "," + RUTAS_PUNT + " FROM " + TABLE_ROUTES;
 		String segmentQuery = "SELECT " + SEGMENTOS_POS_INIT + "," + SEGMENTOS_POS_FIN + " FROM "
 				+ TABLE_SEGMENTS + " WHERE " + SEGMENTOS_RUTA + "=";
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -113,6 +113,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			do {
 				Route r = new Route();
 				r.setId(Long.parseLong(cursor.getString(0)));
+				r.setPuntuacion(Long.parseLong(cursor.getString(1)));
 				Cursor c = db.rawQuery(segmentQuery + r.getId(), null);
 				if (c.moveToFirst()) {
 					do {
